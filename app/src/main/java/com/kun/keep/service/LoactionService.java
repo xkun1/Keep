@@ -2,14 +2,16 @@ package com.kun.keep.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.baidu.location.BDLocation;
 import com.kun.keep.KeepApplicon;
 import com.kun.keep.greendao.DBdKeepDataDao;
-import com.kun.keep.keep.bean.DBdKeepData;
 import com.kun.keep.location.BdLoactionUtil;
+import com.kun.keep.utils.DistanceUtils;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -25,6 +27,17 @@ public class LoactionService extends Service {
     private static final String TAG = LoactionService.class.getSimpleName();
     private ScheduledExecutorService schedule = Executors.newScheduledThreadPool(1);
     private DBdKeepDataDao dataDao;
+    private double lat; //临时变量
+    private double lng;
+    private Dis dis;
+
+    public void setDis(Dis dis) {
+        this.dis = dis;
+    }
+
+    public interface Dis {
+        void discate(double dis);
+    }
 
     @Override
     public void onCreate() {
@@ -41,16 +54,23 @@ public class LoactionService extends Service {
                 BdLoactionUtil.getInstance().requestLocation(new BdLoactionUtil.MyLocationListener() {
                     @Override
                     public void myLocation(BDLocation location) {
-                        DBdKeepData data = new DBdKeepData();
-                        double lat = location.getLatitude();
-                        double lng = location.getLongitude();
-                        data.setLat(lat);
-                        data.setLng(lng);
-                        dataDao.insert(data);
+                        double latitude = location.getLatitude();
+                        double longitude = location.getLongitude();
+                        if (lat != 0 && lng != 0) {
+                            double distance = DistanceUtils.getDistance(lat, lng, latitude, longitude);
+                            dis.discate(distance);
+                            Log.d(TAG, "myLocation: =====距离=" + distance);
+                            Log.d(TAG, "myLocation: =====速度=" + distance / 1000);
+                        }
+                        lat = location.getLatitude();
+                        lng = location.getLongitude();
+
+
+
                     }
                 });
             }
-        }, 0, 100, TimeUnit.SECONDS);
+        }, 0, 10, TimeUnit.SECONDS);
     }
 
     private void stopSchedule() {
@@ -65,9 +85,22 @@ public class LoactionService extends Service {
         stopSchedule();
     }
 
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return new StepBinder();
+    }
+
+    //向Activity传递数据的纽带
+    public class StepBinder extends Binder {
+        /**
+         * 获取当前service对象
+         *
+         * @return StepService
+         */
+        public LoactionService getService() {
+            return LoactionService.this;
+        }
     }
 }

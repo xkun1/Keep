@@ -37,6 +37,7 @@ public class DdActivity extends BaseActivity {
 
     private static final String TAG = DdActivity.class.getSimpleName();
     TextView tv_text;
+    TextView tv_sot;
     private boolean isBind = false;
     //是否开始移动
     private boolean isStart = true;
@@ -47,7 +48,7 @@ public class DdActivity extends BaseActivity {
     //5秒刷新一次
     private static final int REFRESH_TIME = 5000;
 
-    private Timer timer=new Timer(true);
+    private Timer timer = new Timer(true);
 
 
     @SuppressLint("HandlerLeak")
@@ -64,12 +65,12 @@ public class DdActivity extends BaseActivity {
             super.handleMessage(msg);
         }
     };
-    private TimerTask timerTask=new TimerTask() {
+    private TimerTask timerTask = new TimerTask() {
         @Override
         public void run() {
-            if (isRefreshUI){
+            if (isRefreshUI) {
                 Message message = mHandler.obtainMessage();
-                message.what=Constant.REFRESH_UI;
+                message.what = Constant.REFRESH_UI;
                 mHandler.sendMessage(message);
             }
 
@@ -123,8 +124,8 @@ public class DdActivity extends BaseActivity {
     @Override
     protected void initView() {
         tv_text = findViewById(R.id.tv_text);
+        tv_sot = findViewById(R.id.tv_vot);
         dataDao = KeepApplicon.getInstances().getDaoSession().getDBdKeepDataDao();
-
     }
 
     private void startBdService() {
@@ -136,7 +137,14 @@ public class DdActivity extends BaseActivity {
     ServiceConnection conn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-
+            LoactionService stepService = ((LoactionService.StepBinder) service).getService();
+            stepService.setDis(new LoactionService.Dis() {
+                @Override
+                public void discate(double dis) {
+                    tv_text.setText("当前路程=" + dis);
+                    tv_sot.setText("当前速度=" + dis / 1000);
+                }
+            });
         }
 
         @Override
