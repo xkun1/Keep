@@ -1,4 +1,18 @@
 <resources>
     <string name="app_name">Keeps</string>
     <string name="app_desc">计步器和测速率</string>
+    <string name="app_running">行走中</string>
+    <string name="notification">最高速度 : %1$s, 路程 : %2$s.</string>
+    <string name="noti_id" translatable="false">Speedmeterisanid</string>
+    <string name="max_speed">最高速度</string>
+    <string name="average_speed">平均速度</string>
+    <string name="distance">路程</string>
+    <string name="time">时间</string>
+    <string name="accuracy">准度</string>
+    <string name="satellite">卫星</string>
+    <string name="waiting_for_fix">等待GPS修复 …</string>
+    <string name="gps_disabled">GPS被禁用</string>
+    <string name="please_enable_gps">请打开GPS权限</string>
+
+
 </resources>

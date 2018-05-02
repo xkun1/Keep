@@ -8,4 +8,14 @@
     <color name="colorGreen">#0f0</color>
     <color name="colorBack">#000</color>
     <color name="colorWite">#fff</color>
+    <color name="white">#FFF</color>
+    <color name="blue_light">#03A9F4</color>
+    <color name="blue">#1E88E5</color>
+    <color name="blue_dark">#01579B</color>
+    <color name="grey_lighter">#E0E0E0</color>
+    <color name="grey_light">#9E9E9E</color>
+
+    <color name="red">#F44336</color>
+
+
 </resources>
