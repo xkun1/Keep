@@ -89,7 +89,6 @@ public class GpsServices extends Service implements LocationListener, GpsStatus.
                 .setContentTitle(getString(R.string.app_running))
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentIntent(contentIntent);
-
         if(asData){
             builder.setContentText(String.format(getString(R.string.notification), data.getMaxSpeed(), data.getDistance()));
         }else{

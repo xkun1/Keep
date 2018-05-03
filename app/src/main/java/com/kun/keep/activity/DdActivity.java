@@ -12,12 +12,14 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Chronometer;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 import com.gc.materialdesign.widgets.Dialog;
@@ -57,19 +59,6 @@ public class DdActivity extends BaseActivity implements LocationListener, GpsSta
 
     @Override
     protected void initdata() {
-
-    }
-
-
-    @Override
-    protected void initView() {
-        data = new Data(onGpsServiceUpdate);
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setVisibility(View.INVISIBLE);
-
-        refresh = (FloatingActionButton) findViewById(R.id.refresh);
-        refresh.setVisibility(View.INVISIBLE);
         onGpsServiceUpdate = new Data.onGpsServiceUpdate() {
             @Override
             public void update() {
@@ -111,7 +100,35 @@ public class DdActivity extends BaseActivity implements LocationListener, GpsSta
                 distance.setText(s);
             }
         };
+    }
+
+
+    private void openGPS() {
+        if (mLocationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)
+                ||mLocationManager.isProviderEnabled(android.location.LocationManager.NETWORK_PROVIDER)
+                ) {
+            Toast.makeText(this, "位置源已设置！", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Toast.makeText(this, "位置源未  设置！", Toast.LENGTH_SHORT).show();
+        // 转至GPS设置界面
+        Intent intent = new Intent(Settings.ACTION_SECURITY_SETTINGS);
+        startActivityForResult(intent,0);
+    }
+
+
+    @Override
+    protected void initView() {
+        data = new Data(onGpsServiceUpdate);
+        data.setRunning(true);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setVisibility(View.INVISIBLE);
+
+        refresh = (FloatingActionButton) findViewById(R.id.refresh);
+        refresh.setVisibility(View.INVISIBLE);
         mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        openGPS();
         satellite = (TextView) findViewById(R.id.satellite);
         status = (TextView) findViewById(R.id.status);
         accuracy = (TextView) findViewById(R.id.accuracy);
